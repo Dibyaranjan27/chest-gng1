@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "chestwatch",
+  "version": "${version}",
+  "name": "ChestWatch",
+  "description": "Client-side chest storage tracker and change alerts.",
+  "authors": ["Shiv swaroop"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.shivswaroop.chestwatch.ChestWatchClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2",
+    "fabric-api": "*"
+  }
+}

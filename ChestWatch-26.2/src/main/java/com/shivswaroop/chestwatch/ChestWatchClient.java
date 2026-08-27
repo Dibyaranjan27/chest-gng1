@@ -5,12 +5,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.ChestScreen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
@@ -41,7 +39,7 @@ public class ChestWatchClient implements ClientModInitializer {
                 .resolve("config").resolve("chestwatch.json");
         load();
 
-        totalsKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        totalsKey = KeyMappingHelper.registerKeyBinding(new KeyMapping(
                 "key.chestwatch.open_totals",
                 GLFW.GLFW_KEY_H,
                 "category.chestwatch"
@@ -56,7 +54,7 @@ public class ChestWatchClient implements ClientModInitializer {
     }
 
     private static void inspectCurrentChest(Minecraft client) {
-        if (!(client.screen instanceof ChestScreen screen)) {
+        if (!(client.screen instanceof AbstractContainerScreen<?> screen)) {
             lastScreenId = null;
             return;
         }
@@ -73,7 +71,6 @@ public class ChestWatchClient implements ClientModInitializer {
         Map<String, Integer> now = new HashMap<>();
         var menu = screen.getMenu();
 
-        // Chest inventories occupy the first 27 or 54 slots in a chest menu.
         int containerSlots = Math.min(menu.slots.size(), 54);
         for (int i = 0; i < containerSlots; i++) {
             ItemStack stack = menu.slots.get(i).getItem();
@@ -136,7 +133,7 @@ public class ChestWatchClient implements ClientModInitializer {
 
     private static void notifyPlayer(Minecraft client, String message) {
         if (client.player != null) {
-            client.player.displayClientMessage(net.minecraft.network.chat.Component.literal(message), false);
+            client.player.sendSystemMessage(net.minecraft.network.chat.Component.literal(message));
         }
     }
 

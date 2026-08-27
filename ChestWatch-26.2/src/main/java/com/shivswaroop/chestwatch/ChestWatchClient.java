@@ -3,6 +3,7 @@ package com.shivswaroop.chestwatch;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -11,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +31,16 @@ public class ChestWatchClient implements ClientModInitializer {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Map<String, ChestRecord> CHESTS = new HashMap<>();
     private static Path DATA_FILE;
-    private static KeyMapping totalsKey;
+
+    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath("chestwatch", "general"));
+
+    private static final KeyMapping totalsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.chestwatch.open_totals",
+            InputConstants.Type.KEYSYM,
+            InputConstants.KEY_H,
+            CATEGORY
+    ));
 
     private static String lastScreenId = null;
 
@@ -40,15 +49,6 @@ public class ChestWatchClient implements ClientModInitializer {
         DATA_FILE = Minecraft.getInstance().gameDirectory.toPath()
                 .resolve("config").resolve("chestwatch.json");
         load();
-
-        KeyMapping.Category category = KeyMapping.Category.register(
-                ResourceLocation.fromNamespaceAndPath("chestwatch", "general"));
-
-        totalsKey = KeyMappingHelper.registerKeyBinding(new KeyMapping(
-                "key.chestwatch.open_totals",
-                GLFW.GLFW_KEY_H,
-                category
-        ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (totalsKey.consumeClick()) {
@@ -59,7 +59,7 @@ public class ChestWatchClient implements ClientModInitializer {
     }
 
     private static void inspectCurrentChest(Minecraft client) {
-        Screen currentScreen = client.screen;
+        Screen currentScreen = client.currentScreen;
         if (!(currentScreen instanceof AbstractContainerScreen)) {
             lastScreenId = null;
             return;

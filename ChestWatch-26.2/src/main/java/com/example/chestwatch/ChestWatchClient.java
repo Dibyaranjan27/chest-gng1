@@ -1,4 +1,4 @@
-package com.shivswaroop.chestwatch;
+package com.example.chestwatch;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
@@ -50,6 +51,15 @@ public class ChestWatchClient implements ClientModInitializer {
                 .resolve("config").resolve("chestwatch.json");
         load();
 
+        KeyMapping.Category category = KeyMapping.Category.register(
+                Identifier.fromNamespaceAndPath("chestwatch", "general"));
+
+        totalsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.chestwatch.open_totals",
+                GLFW.GLFW_KEY_H,
+                category
+        ));
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (totalsKey.consumeClick()) {
                 showTotals(client);
@@ -59,7 +69,7 @@ public class ChestWatchClient implements ClientModInitializer {
     }
 
     private static void inspectCurrentChest(Minecraft client) {
-        Screen currentScreen = client.currentScreen;
+        Screen currentScreen = client.gui.screen();
         if (!(currentScreen instanceof AbstractContainerScreen)) {
             lastScreenId = null;
             return;

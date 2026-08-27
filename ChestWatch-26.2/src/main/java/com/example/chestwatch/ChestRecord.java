@@ -1,4 +1,4 @@
-package com.shivswaroop.chestwatch;
+package com.example.chestwatch;
 
 import java.util.HashMap;
 import java.util.Map;

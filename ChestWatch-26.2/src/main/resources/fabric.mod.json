@@ -4,10 +4,10 @@
   "version": "${version}",
   "name": "ChestWatch",
   "description": "Client-side chest storage tracker and change alerts.",
-  "authors": ["Shiv swaroop"],
+  "authors": [],
   "environment": "client",
   "entrypoints": {
-    "client": ["com.shivswaroop.chestwatch.ChestWatchClient"]
+    "client": ["com.example.chestwatch.ChestWatchClient"]
   },
   "depends": {
     "fabricloader": ">=0.19.3",

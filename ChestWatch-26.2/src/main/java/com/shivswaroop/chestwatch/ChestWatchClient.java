@@ -8,8 +8,10 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
@@ -39,10 +41,13 @@ public class ChestWatchClient implements ClientModInitializer {
                 .resolve("config").resolve("chestwatch.json");
         load();
 
+        KeyMapping.Category category = KeyMapping.Category.register(
+                ResourceLocation.fromNamespaceAndPath("chestwatch", "general"));
+
         totalsKey = KeyMappingHelper.registerKeyBinding(new KeyMapping(
                 "key.chestwatch.open_totals",
                 GLFW.GLFW_KEY_H,
-                "category.chestwatch"
+                category
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -54,10 +59,12 @@ public class ChestWatchClient implements ClientModInitializer {
     }
 
     private static void inspectCurrentChest(Minecraft client) {
-        if (!(client.screen instanceof AbstractContainerScreen<?> screen)) {
+        Screen currentScreen = client.screen;
+        if (!(currentScreen instanceof AbstractContainerScreen)) {
             lastScreenId = null;
             return;
         }
+        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) currentScreen;
 
         BlockPos pos = findTargetContainer(client);
         if (pos == null || client.level == null) return;

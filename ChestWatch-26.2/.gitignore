@@ -1,0 +1,10 @@
+﻿.gradle/
+build/
+.idea/
+*.iml
+local.properties
+minecraft_class.txt
+test.zip
+test_dir/
+logs/
+out/
